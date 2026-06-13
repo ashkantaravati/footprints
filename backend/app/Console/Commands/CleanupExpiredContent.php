@@ -1,0 +1,4 @@
+<?php
+namespace App\Console\Commands;
+use App\Models\Attachment; use App\Models\Message; use Illuminate\Console\Command; use Illuminate\Support\Facades\DB;
+class CleanupExpiredContent extends Command { protected $signature='footprints:cleanup'; protected $description='Expire retained content and stale sessions'; public function handle(): int { $messages=Message::whereNull('deleted_at')->whereNotNull('retention_until')->where('retention_until','<',now())->update(['deleted_at'=>now()]); $attachments=Attachment::whereNull('deleted_at')->whereNotNull('retention_until')->where('retention_until','<',now())->update(['deleted_at'=>now()]); DB::table('sessions')->where('last_activity','<',now()->subDays(90)->timestamp)->delete(); $this->info("Expired {$messages} messages and {$attachments} attachments."); return self::SUCCESS; } }

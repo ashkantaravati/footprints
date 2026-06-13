@@ -1,0 +1,2 @@
+import { createRouter, createWebHistory } from 'vue-router'; import LoginView from '../views/LoginView.vue'; import ChatView from '../views/ChatView.vue'; import ProfileView from '../views/ProfileView.vue'; import NotificationsView from '../views/NotificationsView.vue';
+export default createRouter({ history:createWebHistory(), routes:[{path:'/login',component:LoginView},{path:'/',component:ChatView},{path:'/profile',component:ProfileView},{path:'/notifications',component:NotificationsView}] });

@@ -1,0 +1,1 @@
+<template><main class="center"><section class="card"><h1>Profile</h1><p>Change password and session management endpoints are available through the API foundation.</p><RouterLink to="/">Back</RouterLink></section></main></template>
