@@ -1,19 +1,15 @@
 # Architecture
 
-## Event stream: Footprints
-Every important action records an immutable row in `footprints`: message creation, group creation, membership changes, upload events, notifications, and audit-relevant user events.
+Footprints uses Laravel 12 rather than custom PHP infrastructure because Laravel 12 supports PHP 8.2+, which is more practical on shared hosts than Laravel 13's newer PHP baseline while remaining actively supported in June 2026. Laravel 13 is tracked as a future upgrade target.
 
-## Backend
-The backend is plain PHP 8 with a tiny custom bootstrap. `backend/public/index.php` routes requests to `backend/api/index.php`. Persistent state is stored in MySQL/MariaDB.
+## Bounded domains
+- Users authenticate with username and password.
+- Circles are groups, including direct-message circles.
+- Messages, attachments, memberships, and retention policies are normal tables.
+- Footprints are audit/activity records and notification inputs, not the source of truth.
 
-## Authentication
-Authentication uses username and password only. Passwords are hashed with PHP `password_hash`, which uses bcrypt by default unless the PHP runtime changes the default. Long-lived sessions store only a SHA-256 token hash in the database. Cookies are HttpOnly and SameSite=Lax.
-
-## Messaging
-Direct messages can be represented as one-to-one groups. Group messages are paginated by message id. The PWA polls `/poll` every few seconds and refreshes active group history when new footprints arrive.
+## API
+REST endpoints are versioned under `/api/v1` and use Laravel routing, request validation, API resources, Eloquent models, and Sanctum stateful session authentication.
 
 ## Retention
-Messages and attachments include `retention_until`. Shared-hosting compatible cron runs `backend/jobs/cleanup.php`, which uses SQL updates/deletes and requires no worker daemon.
-
-## Production notes
-Keep deployments small: up to about 100 users and around 20 active concurrent users. Use HTTPS so session cookies are secure in browsers. Avoid storing secrets in web-accessible documentation.
+Laravel Scheduler runs `footprints:cleanup` hourly. Shared hosts only need one cron entry: `php artisan schedule:run`.

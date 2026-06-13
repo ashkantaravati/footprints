@@ -1,0 +1,4 @@
+<?php
+namespace Database\Seeders;
+use App\Models\Circle; use App\Models\RetentionPolicy; use App\Models\Setting; use App\Models\User; use Illuminate\Database\Seeder;
+class DatabaseSeeder extends Seeder { public function run(): void { $admin=User::firstOrCreate(['username'=>'admin'], ['password'=>'ChangeMeNow123!','is_admin'=>true]); $circle=Circle::firstOrCreate(['name'=>'General'], ['created_by_user_id'=>$admin->id]); $circle->members()->syncWithoutDetaching([$admin->id=>['role'=>'owner']]); RetentionPolicy::firstOrCreate(['circle_id'=>$circle->id], ['message_retention_days'=>90,'attachment_retention_days'=>30]); foreach(['password_min'=>12,'poll_interval'=>3,'max_groups_per_user'=>20,'max_upload_mb'=>10] as $key=>$value){ Setting::updateOrCreate(['key'=>$key], ['value'=>(string)$value]); } if(app()->environment('local')){ User::factory()->count(3)->create()->each(fn(User $user)=>$circle->members()->syncWithoutDetaching([$user->id=>['role'=>'member']])); } } }

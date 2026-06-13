@@ -1,0 +1,4 @@
+<?php
+namespace App\Http\Controllers\Api\V1;
+use App\Http\Controllers\Controller; use App\Http\Requests\StoreCircleRequest; use App\Http\Resources\CircleResource; use App\Models\Circle; use App\Models\Footprint; use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+class CircleController extends Controller { public function index(): AnonymousResourceCollection { return CircleResource::collection(request()->user()->groups()->latest('circles.updated_at')->get()); } public function store(StoreCircleRequest $request): CircleResource { $circle=Circle::create(['name'=>$request->name,'created_by_user_id'=>$request->user()->id]); $members=collect($request->member_ids ?? [])->push($request->user()->id)->unique()->mapWithKeys(fn($id)=>[$id=>['role'=>$id===$request->user()->id?'owner':'member']]); $circle->members()->sync($members); Footprint::record('circle.created',$request->user(),$circle,['name'=>$circle->name]); return new CircleResource($circle); } }

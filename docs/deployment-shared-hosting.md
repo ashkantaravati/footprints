@@ -1,23 +1,13 @@
 # Shared Hosting Deployment
 
-Footprints is designed for cPanel-style PHP hosting with no Node.js, Docker, queues, or WebSockets.
+Shared hosting remains a first-class target. Docker, Redis, queues, and WebSockets are not required.
 
-## Steps
-1. Create a MySQL/MariaDB database and user in cPanel.
-2. Import `sql/schema.sql` through phpMyAdmin.
-3. Upload files via FTP or cPanel File Manager.
-4. Edit `backend/config/config.php` with the database credentials and deployment URL.
-5. Ensure PHP 8.x is selected.
-6. Open `/admin/index.php`, log in with the seeded admin account, create real users, and disable/reset accounts as needed.
+1. Create a MySQL/MariaDB database in cPanel.
+2. Upload `backend` outside the public web root where possible.
+3. Point the API domain or subdirectory to `backend/public`.
+4. Upload the built Vue app from `frontend/dist` to the public PWA location.
+5. Edit `backend/.env` with database, URL, session, and Sanctum stateful-domain settings.
+6. Run migrations through a one-time SSH command when available, or import a SQL dump generated from the migrations.
+7. Configure cPanel cron: `php /home/ACCOUNT/path/backend/artisan schedule:run` every minute or every five minutes.
 
-## Cron cleanup
-Configure cPanel Cron Jobs to run hourly or daily:
-
-```sh
-php /home/YOUR_ACCOUNT/public_html/backend/jobs/cleanup.php
-```
-
-The cleanup job expires sessions and soft-deletes messages or attachments whose retention date has passed.
-
-## Android wrapper
-Open `/android` in Android Studio, change `footprints_url` in `android/app/src/main/res/values/strings.xml`, and build the APK.
+If the host does not allow SSH, build assets locally, export SQL locally after migrations, and import through phpMyAdmin.

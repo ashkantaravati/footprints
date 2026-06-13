@@ -1,16 +1,9 @@
-# Footprints Quickstart
+# Quickstart
 
-Footprints is a lightweight self-hosted communication system for small teams. It uses PHP 8, MySQL/MariaDB, a vanilla JavaScript PWA, and an Android WebView wrapper.
+1. Copy `backend/.env.example` to `backend/.env` and set database credentials.
+2. From `backend`, run `composer install`, `php artisan key:generate`, `php artisan migrate --seed`.
+3. From `frontend`, run `npm install` and `npm run build`.
+4. Point the web root to `backend/public` for the API and upload `frontend/dist` as the PWA.
+5. Log in with `admin` / `ChangeMeNow123!` and change the password.
 
-## Local/shared-hosting setup
-1. Upload the repository contents to your hosting account.
-2. Import `sql/schema.sql` in phpMyAdmin.
-3. Copy `backend/config/config.example.php` to `backend/config/config.php` and set database credentials plus your base URL.
-4. Visit `/frontend/src/index.html` and log in as `admin` with `ChangeMeNow123!`.
-5. Change the admin password immediately from the app or reset it from `/admin`.
-
-## Important URLs
-- PWA: `/frontend/src/index.html`
-- API front controller: `/backend/public/index.php?route=...`
-- Admin panel: `/admin/index.php`
-- Cleanup cron script: `/backend/jobs/cleanup.php`
+For local development, `make install`, `make migrate`, `make seed`, and `make dev` provide the fastest path.
