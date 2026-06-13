@@ -1,0 +1,1 @@
+-- Footprints MVP starts at schema.sql. Append future ALTER TABLE statements here.
